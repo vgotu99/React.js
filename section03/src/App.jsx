@@ -1,23 +1,18 @@
 import "./App.css";
+
 // import Header from "./components/Header.jsx";
 // import Main from "./components/Main.jsx";
 // import Footer from "./components/Footer.jsx";
 // import Button from "./components/Button.jsx";
-// 아래에서 state 실습해야해서 윗 내용 주석처리함
-import { useState } from "react";
-// useState는 react가 제공하는 내장 함수로 스테이트를 생성하는데 쓰인다.
 
-// function HeaderEx() {
-//   // component 함수명은 항상 대문자로 시작해야하며 아래 return문 안에 HTML 요소를 넣어주면 된다.
-//   return(
-//     <header>
-//       <h1>header</h1>
-//     </header>
-//   )
-// }
-// // 자식 component
-// // 자식과 부모 component간의 관계를 보기 위해서 주석처리하고 남겨둠. 실제로 동작하는 Header는 ./components/Header.jsx에 있어
+// import Bulb from './components/Bulb.jsx'
+// import CountUp from "./components/CountUp.jsx";
 
+import Register from "./components/Register";
+import HookExam from "./components/HookExam";
+
+
+// ### Header, Main, Footer, Button 실습 - 부모 component와 자식 component
 // const buttonProps = {
 //   text: "블로그",
 //   color: "blue",
@@ -45,44 +40,38 @@ import { useState } from "react";
 //       </Button>
 //     </>
 //   );
-//   아래에서 state 실습해야해서 윗 내용 주석처리함
-function App() {
-  const [count, setCount] = useState(0);
-  // 일반적으로 사용하는 const 변수명 = 이 아닌 state에서는 배열형태의 값을 받을 예정이므로 구조분해할당을 활용하여 const [state이름, setState이름] = 로 선언해주어야한다.
-  // state이름은 state의 현재 값, setState이름은 해당 state를 변경시키는 상태 변화 함수
-
-  // console.log(state)
-  // // [n, f()]이라는 배열형태의 값이 반환되는데 여기서 n은 state의 현재 값이고 f()는 해당 state를 변경시키는 상태 변화 함수이다. 따라서 어차피 배열형태의 값을 받을 거니까 첫줄에서 const [state, setState] = useState(0)으로 선언해준 것이다.
-  const [light, setLight] = useState("OFF");
-
-  return (
-    <>
-      <div>
-        <h1>{count}</h1>
-        <button
-          onClick={() => {
-            setCount(count + 1);
-          }}
-          // 반드시 화살표 함수 형태로 작성해주어야한다.
-        >
-          +
-        </button>
-      </div>
-      <div>
-        <h1>{light}</h1>
-        <button
-          onClick={() => {
-            setLight(light === "ON" ? "OFF" : "ON");
-          }}
-        >
-          {light === "ON" ? "끄기" : "켜기"}
-        </button>
-      </div>
-    </>
-  );
-  // state의 값이 바뀌면 component가 다시 return하게되며 변한 state의 값이 화면을 다시 랜더링해준다. 이를 리랜더링이라고 한다. 따라서 state는 가변적인 값을 이용하여 화면에 변화를 주기 위해서 사용한다!!!!!
-}
+// }
 // 부모 component, Root component
 // HTML 요소를 담고있는 component들은 모두 App component의 자식 관계가 되어야 화면에 랜더링될 수 있다. ex) Header, Main, Footer 등등
+
+
+// CountUp, Bulb 실습 - state, 리랜더링
+// function App() {
+//   return (
+//     <>
+//       <CountUp />
+//       <Bulb />
+//     </>
+//   );
+// }
+// // state의 값이 바뀌면 component가 다시 return하게되며 변한 state의 값이 화면을 다시 랜더링해준다. 이를 리랜더링이라고 한다. 따라서 state는 가변적인 값을 이용하여 화면에 변화를 주기 위해서 사용한다!!!!!
+
+// // component가 리랜더링 되는 경우
+// // 1. 자신이 관리하는 state의 값이 변경되었을 때
+// // 2. 자신이 제공받는 props의 값이 변경되었을 때
+// // 3. 부모 component가 리랜더링 되었을 때
+// // 만약 관련 없는 두 component(Bulb, CountUp)가 부모 component에서 호출된 것이 아니고 직접 안에 작성했을 때 하나의 자식 component(Bulb)가 리랜더링된다면 부모 component는 리랜더링되고 다른 하나의 자식 component(CountUp)도 함께 리랜더링되어 의도하지 않은 불필요한 리소스가 낭비된다. 따라서 관련이 없는 두 component(Bulb, CountUp)는 한 component(특히 부모 component)에 함께 작성하지 않고 반드시 분리해서 작성해주고 부모 component에서는 해당 component를 호출해주기만 하면 된다
+
+
+function App() {
+  return (
+    <>
+      <Register />
+      <br></br>
+      <HookExam />
+    </>
+  )
+}
+
 
 export default App;
