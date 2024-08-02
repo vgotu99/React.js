@@ -1,0 +1,25 @@
+body {
+    padding: 20px;
+}
+
+.App {
+    margin: 0 auto;
+    width: 400px;
+}
+
+.App > section {
+    background-color: rgb(245, 245, 245);
+    border: 1px solid rgb(240, 240, 240);
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 10px;
+}
+
+.controller button {
+    width: 49px;
+    margin: 5px
+}
+
+.controller input {
+    margin: 0px 5px
+}
