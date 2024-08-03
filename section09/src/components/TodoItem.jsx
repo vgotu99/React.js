@@ -1,7 +1,11 @@
 import "./TodoItem.css";
-import { memo } from "react";
+import { memo, useContext } from "react";
+import { toDoDispatchContext } from "../App";
 
-const TodoItem = ({ id, isDone, content, date, onUpdate, onDelete }) => {
+const TodoItem = ({ id, isDone, content, date }) => {
+  // props를 대신하여 context를 통해 { onUpdate, onDelete }를 가져옴
+  const { onUpdate, onDelete } = useContext(toDoDispatchContext)
+
   const onChangeCheckBox = () => {
     onUpdate(id);
   };

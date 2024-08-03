@@ -1,5 +1,12 @@
 import "./App.css";
-import { useState, useRef, useReducer, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  useReducer,
+  useCallback,
+  createContext,
+  useMemo,
+} from "react";
 import Header from "./components/Header";
 import Editor from "./components/Editor";
 import List from "./components/List";
@@ -46,6 +53,14 @@ function reducer(state, action) {
       return state;
   }
 }
+
+// export const toDoContext = createContext();
+// // 부모 component -> 자식 component -> ... -> 자식의 자식 component에게 props를 전달하는 것을 props drilling이라고 한다.
+// // context는 이러한 props drilling을 해결하고자 자식 component는 물론이고 자식의 자식 component에게도 다이렉트로 props를 한번에 전달하기 위한 별도의 component이다.
+// toDoContext에는 값이 변경될 수 있는 todos state와 값이 변경되면 안되서 메모이제이션 해준 onCreate, onUpdate, onDelete가 함께 있다. 하지만 todos state의 값이 변하게 된다면 toDoContext라는 component 자체가 리렌더링되기 때문에 메모이제이션 해준 것이 무의미해지기 때문에 변할 수 있는 값과 변하면 안되는 값을 따로 나눠서 다른 context에 담아줘야한다.
+export const toDoStateContext = createContext();
+export const toDoDispatchContext = createContext();
+// 변하지 않아야하는 toDoDispatchContext에 담길 데이터(객체 형태)들은 반드시 useMemo하여 새로운 변수에 담아주어야 한다. 153번째 줄에 useMemo 사용한 코드 작성해둠
 
 function App() {
   // const [todos, setTodos] = useState(mockData);
@@ -135,11 +150,29 @@ function App() {
   // useCallback(최적화하고 싶은 함수, deps) => deps가 변경되었을 때 해당 콜백함수를 생성하고 해당 함수 자체를 반환한다. (함수 그 자체를 메모이제이션 해주는 것)
   // useMemo는 deps(두번째 인수)가 변경되면 콜백함수(첫번째 인수)가 실행된 후 반환된 값을 반환하고, useCallback은 deps(두번째 인수)가 변경되면 콜백함수(첫번째 인수)가 생성되고 해당 콜백함수 자체를 반환한다.
 
+  const memoizedDispatch = useMemo(() => {
+    return { onCreate, onUpdate, onDelete };
+  }, []);
+  // toDoDispatchContext의 value에 담길 값인 { onCreate, onUpdate, onDelete }가 App component에서 todos state가 변경되어 App component 전체가 리렌더링된다면 { onCreate, onUpdate, onDelete } 도 새롭게 다시 생성(값이 변함)될 것이므로 그걸 방지하기 위하여 useMemo(~~, [])를 사용하여 { onCreate, onUpdate, onDelete }의 값이 처음 마운트될 때만 생성되고 다시는 재생성되지 않도록 메모이제이션해줌
+
   return (
     <div className="App">
       <Header />
-      <Editor onCreate={onCreate} />
-      <List todos={todos} onUpdate={onUpdate} onDelete={onDelete} />
+
+      {/* <toDoContext.Provider value={{todos, onCreate, onUpdate, onDelete}}>
+        <Editor />
+        <List />
+      </toDoContext.Provider> */}
+      {/* toDoContext.provider라는 component로 props를 전달받고 있는 component들을 감싸주고 toDocontext.provider에게 value={ {모든 props들}(<-객체형태임) } 라는 props를 할당해주면 된다. 그러면 toDocontext.provider는 Editor component와 List component의 부모 component로 설정된 것이다. 하지만 context는 자식의 자식 component들에게도 다이렉트로 props를 제공해줄 수 있기때문에 App -> toDoContext.provider -> Editor와 Editor의 자식들의 자식들까지 전부, List와 List의 자식들의 자식들까지 전부 다이렉트로 props를 전달할 수 있게된다. */}
+      {/* App component로 부터 context.provider가 value로 props를 전부 받아갔으니까 Editor component와 List component는 더 이상 App component로부터 props를 받아갈 필요가 없다. 따라서 Editor와 List에서 받아가던 props는 삭제하면 된다. */}
+      {/* 하지만 변할 수 있는 값 todos와 변하면 안되는 값 onCreate, onUpdate, onDelete가 하나의 context에 있으면 변하면 안되는 값이 변할 수 있는 값이 바뀔 때마다 변하게 되기 때문에 변할 수 있는 값을 담은 context, 변하면 안되는 값을 담은 context로 나눠줘야한다. 아래 코드 참고 */}
+      <toDoStateContext.Provider value={todos}>
+        <toDoDispatchContext.Provider value={memoizedDispatch}>
+          {/* 메모이제이션한 { onCreate, onUpdate, onDelete }를 담은 memoizedDispatch를 value props로 전달해줌. */}
+          <Editor />
+          <List />
+        </toDoDispatchContext.Provider>
+      </toDoStateContext.Provider>
       {/* <Exam /> */}
     </div>
   );
