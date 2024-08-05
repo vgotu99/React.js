@@ -1,0 +1,35 @@
+.editor > div {
+    margin-bottom: 40px;
+}
+
+.editor > div > h4 {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.editor > div > input, textarea {
+    background-color: #ececec;
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    padding: 10px 20px;
+}
+
+.editor .emotion_section .emotion_list_wrapper {
+    display: flex;
+    justify-content: space-around;
+    gap: 2%;
+}
+
+.editor .content_section > textarea {
+    padding: 20px;
+    width: 100%;
+    min-height: 200px;
+    resize: none;
+    box-sizing: border-box;
+}
+
+.editor .button_section {
+    display: flex;
+    justify-content: space-between;
+}

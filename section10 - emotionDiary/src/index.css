@@ -9,6 +9,7 @@ html, body {
     margin: 0px;
     width: 100%;
     background-color: rgb(246, 246, 246);
+    display: flex;
 }
 
 #root {
@@ -22,6 +23,7 @@ html, body {
     /* 100vh에서 vh는 viewport height로 현재 사용자가 보고있는 브라우저의 스크린 높이를 뜻함. 따라서 100vh는 스크린의 최대 높이를 뜻하는 값임 */
     height: 100%;
     box-shadow: rgba(100, 100, 100, 0.2) 0px 0px 29px 0px;
+    padding: 0px 20px;
 }
 
 body * {

@@ -1,0 +1,34 @@
+.emotionItem {
+  background-color: #ececec;
+  padding: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.emotionItem .emotion_img {
+  width: 50%;
+  margin-bottom: 10px;
+}
+
+.emotionItem_on_1 {
+  background-color: #64c963;
+  color: white;
+}
+.emotionItem_on_2 {
+  background-color: #9DD772;
+  color: white;
+}
+.emotionItem_on_3 {
+  background-color: #FDCE17;
+  color: white;
+}
+.emotionItem_on_4 {
+  background-color: #FD8446;
+  color: white;
+}
+.emotionItem_on_5 {
+  background-color: #FD565F;
+  color: white;
+}
+
