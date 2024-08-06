@@ -1,17 +1,15 @@
 import "./App.css";
-import { useReducer, useRef, createContext } from "react";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { useReducer, useRef, createContext, useEffect, useState } from "react";
+import { Routes, Route, Link, useNavigate, json } from "react-router-dom";
 // react-router-dom은 기존의 방식인 Server Side Rendering을 하는 MPA(Multi Page Application)방식이 아닌 Client Side Rendering을 하는 SPA(Single Page Application)방식으로 페이지 라우팅이 가능하도록 한다.
 // Routes와 Route는 react route dom의 페이지 라우팅이 가능한 페이지를 구성하는 기능을 하는 component이다.
 // Link는 react route dom이 제공하는 별도의 component로 페이지를 이동시키는(새로운 페이지를 페이지 라우팅하여 랜더링하는) 기능을 한다.
 // useNavigate는 react route dom이 제공하는 custom hook으로 페이지를 이동시키는 navigate함수를 반환하는 기능을 한다.
-import Notfound from "./pages/NotFound.jsx";
 import Home from "./pages/Home.jsx";
 import Diary from "./pages/Diary.jsx";
 import New from "./pages/New.jsx";
 import Edit from "./pages/Edit.jsx";
-import Button from "./components/Button.jsx";
-import Header from "./components/Header.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 // import emotion1 from "./assets/emotion1.png";
 // import emotion2 from "./assets/emotion2.png";
@@ -27,40 +25,38 @@ import { getEmotionImage } from "./util/get-emotion-image.js";
 // 3. "/diary" : 일기를 상세히 조회하는 Diary 페이지
 // 4. "/edit" : 일기를 수정하는 Edit 페이지
 
-const mockData = [
-  {
-    id: 1,
-    createdDate: new Date('2024-08-05').getTime(),
-    emotionId: 1,
-    content: "1번 일기 내용",
-  },
-  {
-    id: 2,
-    createdDate: new Date('2024-08-31').getTime(),
-    emotionId: 2,
-    content: "2번 일기 내용",
-  },
-  {
-    id: 3,
-    createdDate: new Date('2024-07-01').getTime(),
-    emotionId: 3,
-    content: "3번 일기 내용",
-  },
-];
 
 function reducer(state, action) {
+  let nextState;
+
   switch (action.type) {
-    case "CREATE":
-      return [action.data, ...state];
-    case "UPDATE":
-      return state.map((item) =>
+    case 'INIT' : {
+      return action.data
+    }
+    case "CREATE": {
+      nextState = [action.data, ...state];
+      break;
+    }
+    case "UPDATE": {
+      nextState = state.map((item) =>
         String(item.id) === String(action.data.id) ? action.data : item
       );
-    case "DELETE":
-      return state.filter((item) => String(item.id) !== String(action.id));
+      break;
+    }
+    case "DELETE": {
+      nextState = state.filter((item) => String(item.id) !== String(action.id));
+      break
+    }
     default:
       return state;
   }
+  // reducer 함수가 실행되고 'CREATE', 'UPDATE', 'DELETE'될 때마다 nextState라는 변수에 값이 담긴다.
+
+  localStorage.setItem('diary', JSON.stringify(nextState))
+  // 로컬스토리지에 diary라는 키에 대한 값으로 nextState의 값이 담김
+
+  return nextState;
+  // 그 이후 nextState에 담긴 값을 반환한다
 }
 
 export const DiaryStateContext = createContext();
@@ -74,10 +70,39 @@ function App() {
   //   nav("/new");
   //   // nav('/경로')
   // };
-  const [data, dispatch] = useReducer(reducer, mockData);
-  const idRef = useRef(4);
+  const [isLoading, setIsLoading] = useState(true)
+  const [data, dispatch] = useReducer(reducer, []);
+  const idRef = useRef(1);
 
-  // 새로운 일기 추가
+  useEffect(() => {
+    const storedData = localStorage.getItem('diary')
+    if(!storedData) {
+      setIsLoading(false)
+      return
+    }
+    const parsedData = JSON.parse(storedData)
+    if(!Array.isArray(parsedData)) {
+      setIsLoading(false)
+      return
+    }
+
+    let maxId = 0
+    parsedData.forEach((item) => {
+      if(Number(item.id) > maxId) {
+        maxId = Number(item.id)
+      }
+    })
+
+    idRef.current = maxId + 1
+
+    dispatch ({
+      type: 'INIT',
+      data: parsedData
+    })
+    setIsLoading(false)
+  }, [])
+  // 두번째 인수를 빈배열로 하여 처음에 마운트 될 때만 실행되도록 함
+
   const onCreate = (createdDate, emotionId, content) => {
     dispatch({
       type: "CREATE",
@@ -109,6 +134,10 @@ function App() {
       id,
     });
   };
+
+  if(isLoading) {
+    return <div>데이터 로딩중입니다...</div>
+  }
 
   return (
     <>
@@ -187,7 +216,7 @@ function App() {
       </button> */}
 
       <DiaryStateContext.Provider value={data}>
-        <DiaryDispatchContext.Provider value={{onCreate, onUpdate, onDelete}}>
+        <DiaryDispatchContext.Provider value={{ onCreate, onUpdate, onDelete }}>
           <Routes>
             {/* Routes component 사용시 주의사항
         1. Routes component 안에는 Route component만 들어갈 수 있다.
@@ -199,7 +228,7 @@ function App() {
             <Route path="/diary/:id" element={<Diary />} />
             {/* /경로/:id => 동적 경로인 URL parameter를 이용하여 특정 id를 가진 페이지에 접근하는 방법 */}
             <Route path="/edit/:id" element={<Edit />} />
-            <Route path="*" element={<Notfound />} />
+            <Route path="*" element={<NotFound />} />
             {/* path="*" 는 와일드카드로 위의 모든 path와 일치하지 않다면 path가 *인 component를 렌더링해준다. */}
           </Routes>
         </DiaryDispatchContext.Provider>

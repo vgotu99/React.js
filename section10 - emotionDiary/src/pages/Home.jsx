@@ -6,6 +6,7 @@ import { DiaryStateContext } from "../App";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import DiaryList from "../components/DiaryList";
+import usePageTitle from "../hooks/usePageTitle";
 
 const getMonthlyData = (pivotDate, data) => {
 
@@ -29,6 +30,7 @@ const Home = () => {
   // // 다만 감정일기장에서는 두가지 동적경로 중 URL parameter를 사용할 것이므로 일단 알아두고 나중에 실습해보자
   const data = useContext(DiaryStateContext)
   const [pivotDate, setPivotDate] = useState(new Date());
+  usePageTitle('감정 일기장')
 
   const monthlyData = getMonthlyData(pivotDate, data)
 
